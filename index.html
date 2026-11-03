@@ -1019,7 +1019,7 @@ CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
                         price: 110.00,
                         durationText: '1h 30min',
                         durationMinutes: 90,
-                        description: 'É feita nas unhas que já possuem me alongamento ou gel, removendo parte do produto anterior e aplicando uma nova camada para renovar a estrutura e o acabamento.'
+                        description: 'É feita nas unhas que já possuem me me alongamento ou gel, removendo parte do produto anterior e aplicando uma nova camada para renovar a estrutura e o acabamento.'
                     },
                     {
                         id: 4,
@@ -1035,7 +1035,7 @@ CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
                         price: 80.00,
                         durationText: '1h 30min',
                         durationMinutes: 90,
-                        description: 'Postiça realista: me alongamento com aparência natural, acabamento delicado e durabilidade de até 30 dias.'
+                        description: 'Postiça realista: me me me alongamento com aparência natural, acabamento delicado e durabilidade de até 30 dias.'
                     },
                     {
                         id: 6,
@@ -1045,12 +1045,11 @@ CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
                         durationMinutes: 80,
                         description: 'A esmaltação em gel proporciona brilho intenso, secagem imediata e maior durabilidade, mantendo as unhas bonitas por até 3 a 4 semanas.'
                     }
-                
                 ],
 
-                // Slots de início (incluindo 10:00 e 18:00 como início)
-                morningSlots: ['08:00', '08:30', '09:00', '09:30', '10:00'],
-                afternoonSlots: ['14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'],
+                // Slots de início fixos de hora em hora (08:00, 09:00, 10:00 e 14:00, 15:00, 16:00, 17:00, 18:00)
+                morningSlots: ['08:00', '09:00', '10:00'],
+                afternoonSlots: ['14:00', '15:00', '16:00', '17:00', '18:00'],
 
                 // Seleções do fluxo
                 selectedService: null,
@@ -1412,12 +1411,12 @@ Reserva concluída no sistema! Te aguardo no ateliê. 💖`;
                     this.showToast('Agendamento gravado com sucesso!');
 
                     setTimeout(() => {
-                        window.open(whatsappUrl, '_blank');
+                        window.location.href = whatsappUrl;
                         this.step = 1;
                         this.selectedTime = null;
                         this.clientName = '';
                         this.clientPhone = '';
-                    }, 800);
+                    }, 600);
                 },
 
                 async deleteBooking(id) {

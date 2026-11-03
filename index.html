@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duda Crespo - Nail Designer | Agendamento Online</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f7f4ff',
+                            100: '#efe9fe',
+                            200: '#ddd3fe',
+                            300: '#c4b0fd',
+                            400: '#a785fa',
+                            500: '#8a40ff',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                            dark: '#181329'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Supabase JS Client via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #faf7ff;
+        }
+        .serif-title {
+            font-family: 'Playfair Display', serif;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c4b0fd;
+            border-radius: 10px;
+        }
+        .butterfly-glow {
+            filter: drop-shadow(0 0 8px rgba(138, 64, 255, 0.45));
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between" x-data="supabaseBookingApp()" x-init="initApp()">
+
+    <!-- NAVEGAÇÃO / HEADER -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-brand-100 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- LOGO DC NAIL DESIGNER -->
+            <div class="flex items-center gap-3 cursor-pointer" @click="currentView = 'booking'">
+                <div class="relative w-11 h-11 rounded-full border-2 border-brand-500 flex items-center justify-center p-1 bg-white shadow-sm">
+                    <!-- Borboleta SVG inspirada na logo -->
+                    <svg class="w-6 h-6 text-brand-600 butterfly-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M12 4c.5 0 1 .5 1 1v14c0 .5-.5 1-1 1s-1-.5-1-1V5c0-.5.5-1 1-1z" />
+                        <path d="M12 6c-2-3-7-3-9 1-1.5 3-1 6.5 2 8.5 2 1.5 5 1 7-1.5" />
+                        <path d="M12 6c2-3 7-3 9 1 1.5 3 1 6.5-2 8.5-2 1.5-5 1-7-1.5" />
+                        <path d="M12 13c-1.5 1.5-3.5 3-6 2.5-2-.5-3.5-2.5-3-4.5" />
+                        <path d="M12 13c1.5 1.5 3.5 3 6 2.5 2-.5 3.5-2.5 3-4.5" />
+                        <circle cx="12" cy="3.5" r="1" fill="currentColor" />
+                    </svg>
+                </div>
+                <div>
+                    <span class="block text-xl font-bold tracking-tight text-brand-900 leading-none serif-title">
+                        DC <span class="text-xs font-normal font-sans italic text-brand-600 tracking-normal">nail designer</span>
+                    </span>
+                    <span class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold block mt-0.5">Duda Crespo</span>
+                </div>
+            </div>
+
+            <!-- NAVEGAÇÃO LIMPA -->
+            <div class="flex items-center gap-2">
+                <button 
+                    @click="currentView = 'booking'" 
+                    :class="currentView === 'booking' ? 'bg-brand-100 text-brand-900 font-bold' : 'text-slate-600 hover:text-brand-700'"
+                    class="px-3 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-calendar-plus text-brand-600"></i>
+                    <span>Agendar</span>
+                </button>
+                
+                <button 
+                    @click="openAdminTab()" 
+                    :class="currentView === 'admin' ? 'bg-brand-100 text-brand-900 font-bold' : 'text-slate-600 hover:text-brand-700'"
+                    class="px-3 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-lock text-brand-600"></i>
+                    <span>Painel</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="max-w-4xl mx-auto px-4 py-8 w-full flex-grow">
+
+        <!-- ================= VISÃO 1: FLUXO DE AGENDAMENTO CLIENTE ================= -->
+        <template x-if="currentView === 'booking'">
+            <div>
+                
+                <!-- HERO BANNER -->
+                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 text-white p-6 sm:p-8 mb-8 shadow-xl shadow-brand-900/15 border border-brand-700/50">
+                    <div class="relative z-10 max-w-xl">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-brand-200 mb-3 border border-white/20">
+                            <i class="fa-solid fa-sparkles text-amber-300"></i> Ateliê Duda Crespo
+                        </span>
+                        <h1 class="text-2xl sm:text-4xl font-bold serif-title tracking-wide mb-2">Agende seu horário online</h1>
+                        <p class="text-brand-100 text-xs sm:text-sm font-light">
+                            Escolha seu procedimento, consulte a disponibilidade em tempo real de Seg a Sáb e garanta o seu horário.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- STEPPER DE ETAPAS -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between relative max-w-2xl mx-auto px-2">
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 rounded-full z-0"></div>
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-brand-600 rounded-full transition-all duration-500 z-0"
+                             :style="`width: ${((step - 1) / 3) * 100}%`"></div>
+
+                        <!-- Step 1 -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-md"
+                                 :class="step >= 1 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500'">
+                                <template x-if="step > 1"><i class="fa-solid fa-check"></i></template>
+                                <template x-if="step <= 1"><span>1</span></template>
+                            </div>
+                            <span class="text-[11px] font-semibold mt-1 text-slate-600 hidden sm:block">Serviço</span>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-md"
+                                 :class="step >= 2 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500'">
+                                <template x-if="step > 2"><i class="fa-solid fa-check"></i></template>
+                                <template x-if="step <= 2"><span>2</span></template>
+                            </div>
+                            <span class="text-[11px] font-semibold mt-1 text-slate-600 hidden sm:block">Data & Hora</span>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-md"
+                                 :class="step >= 3 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500'">
+                                <template x-if="step > 3"><i class="fa-solid fa-check"></i></template>
+                                <template x-if="step <= 3"><span>3</span></template>
+                            </div>
+                            <span class="text-[11px] font-semibold mt-1 text-slate-600 hidden sm:block">Seus Dados</span>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-md"
+                                 :class="step >= 4 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500'">
+                                <span>4</span>
+                            </div>
+                            <span class="text-[11px] font-semibold mt-1 text-slate-600 hidden sm:block">Confirmação</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASSO 1: SELEÇÃO DO SERVIÇO -->
+                <div x-show="step === 1" x-transition:enter="transition ease-out duration-300 opacity-0 translate-y-4">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 serif-title">Selecione o Serviço</h2>
+                            <p class="text-xs text-slate-500">Escolha o procedimento desejado para ver os horários livres.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <template x-for="service in services" :key="service.id">
+                            <div 
+                                @click="selectService(service)"
+                                :class="selectedService?.id === service.id ? 'border-brand-600 ring-2 ring-brand-500/20 bg-brand-50/40 shadow-lg' : 'border-slate-200/80 bg-white hover:border-brand-300 hover:shadow-md'"
+                                class="rounded-2xl p-5 border transition-all duration-200 cursor-pointer relative flex flex-col justify-between group">
+                                
+                                <div>
+                                    <div class="flex justify-between items-start gap-2 mb-2">
+                                        <h3 class="font-bold text-slate-900 text-base group-hover:text-brand-700 transition-colors" x-text="service.title"></h3>
+                                        <span class="font-bold text-brand-700 text-base whitespace-nowrap" x-text="formatCurrency(service.price)"></span>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 text-xs font-medium text-slate-500 mb-3">
+                                        <span class="inline-flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-md text-slate-700 font-semibold">
+                                            <i class="fa-regular fa-clock text-brand-600"></i>
+                                            <span x-text="service.durationText"></span>
+                                        </span>
+                                    </div>
+
+                                    <p class="text-xs text-slate-600 leading-relaxed line-clamp-3 mb-4" x-text="service.description"></p>
+                                </div>
+
+                                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                                    <button 
+                                        type="button"
+                                        @click.stop="openModal(service)"
+                                        class="text-xs text-brand-600 hover:text-brand-800 font-medium underline flex items-center gap-1">
+                                        <i class="fa-regular fa-circle-info"></i> Detalhes
+                                    </button>
+
+                                    <span 
+                                        :class="selectedService?.id === service.id ? 'bg-brand-600 text-white' : 'bg-brand-100 text-brand-700 group-hover:bg-brand-600 group-hover:text-white'"
+                                        class="text-xs px-3 py-1.5 rounded-xl font-semibold transition-colors flex items-center gap-1">
+                                        <span x-text="selectedService?.id === service.id ? 'Selecionado' : 'Selecionar'"></span>
+                                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button 
+                            @click="goToStep2()" 
+                            :disabled="!selectedService"
+                            :class="selectedService ? 'bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-600/30' : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
+                            class="px-6 py-3 rounded-2xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-2">
+                            <span>Avançar para Data e Horário</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PASSO 2: ESCOLHA DE DATA E HORÁRIO -->
+                <div x-show="step === 2" x-transition:enter="transition ease-out duration-300 opacity-0 translate-y-4">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 serif-title">Escolha a Data e Horário</h2>
+                            <p class="text-xs text-slate-500">
+                                Horários de atendimento: <span class="font-bold text-brand-700">08:00 às 10:00</span> e <span class="font-bold text-brand-700">14:00 às 18:00</span>.
+                            </p>
+                        </div>
+                        <button @click="step = 1" class="text-xs text-brand-600 font-semibold hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-left"></i> Voltar aos Serviços
+                        </button>
+                    </div>
+
+                    <!-- CARD DO SERVIÇO SELECIONADO -->
+                    <div class="bg-brand-50/70 border border-brand-200 rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-lg">
+                                💅
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm" x-text="selectedService?.title"></h4>
+                                <p class="text-xs text-slate-600" x-text="`Duração: ${selectedService?.durationText} (${selectedService?.durationMinutes} min) • ${formatCurrency(selectedService?.price || 0)}`"></p>
+                            </div>
+                        </div>
+
+                        <template x-if="selectedTime">
+                            <div class="bg-white px-3 py-1.5 rounded-xl border border-brand-200 text-xs font-semibold text-brand-900 shadow-sm">
+                                <i class="fa-regular fa-clock text-brand-600"></i>
+                                Horário: <span x-text="selectedTime"></span> às <span x-text="calculateEndTime(selectedTime, selectedService.durationMinutes)"></span>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        
+                        <!-- CALENDÁRIO MENSAL (7 cols) -->
+                        <div class="lg:col-span-7 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-slate-900 text-base capitalize" x-text="currentMonthYearName"></h3>
+                                <div class="flex gap-1">
+                                    <button @click="prevMonth()" class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600">
+                                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                                    </button>
+                                    <button @click="nextMonth()" class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600">
+                                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                                <span class="text-[11px] font-bold text-red-400">Dom</span>
+                                <span class="text-[11px] font-bold text-slate-500">Seg</span>
+                                <span class="text-[11px] font-bold text-slate-500">Ter</span>
+                                <span class="text-[11px] font-bold text-slate-500">Qua</span>
+                                <span class="text-[11px] font-bold text-slate-500">Qui</span>
+                                <span class="text-[11px] font-bold text-slate-500">Sex</span>
+                                <span class="text-[11px] font-bold text-slate-500">Sáb</span>
+                            </div>
+
+                            <div class="grid grid-cols-7 gap-1 text-center">
+                                <template x-for="blank in calendarBlanks" :key="'b'+blank">
+                                    <div class="h-10"></div>
+                                </template>
+
+                                <template x-for="dayObj in calendarDays" :key="dayObj.dateStr">
+                                    <button 
+                                        @click="onSelectDate(dayObj)"
+                                        :disabled="dayObj.isDisabled"
+                                        :class="{
+                                            'bg-brand-600 text-white font-bold shadow-md shadow-brand-600/30 scale-105': selectedDate === dayObj.dateStr,
+                                            'hover:bg-brand-100 hover:text-brand-800 text-slate-800 font-medium': !dayObj.isDisabled && selectedDate !== dayObj.dateStr,
+                                            'text-slate-300 opacity-40 cursor-not-allowed bg-slate-50': dayObj.isDisabled,
+                                            'border-2 border-brand-400': dayObj.isToday && selectedDate !== dayObj.dateStr
+                                        }"
+                                        class="h-10 rounded-xl text-xs sm:text-sm flex flex-col items-center justify-center relative transition-all">
+                                        <span x-text="dayObj.dayNumber"></span>
+                                        <template x-if="dayObj.isDisabled && dayObj.isSunday">
+                                            <span class="text-[8px] font-semibold text-red-400">Folga</span>
+                                        </template>
+                                    </button>
+                                </template>
+                            </div>
+
+                            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-600"></span> Selecionado</div>
+                                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full border border-brand-400"></span> Hoje</div>
+                                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-200"></span> Indisponível</div>
+                            </div>
+                        </div>
+
+                        <!-- SLOTS DE HORÁRIOS (5 cols) -->
+                        <div class="lg:col-span-5 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <h3 class="font-bold text-slate-900 text-base">Horários Livres</h3>
+                                    <span x-show="isLoadingSlots" class="text-xs text-brand-600 animate-pulse"><i class="fa-solid fa-spinner fa-spin"></i> Verificando agenda...</span>
+                                </div>
+                                <p class="text-xs text-slate-500 mb-4" x-text="selectedDateFormatted ? `Data: ${selectedDateFormatted}` : 'Selecione uma data no calendário'"></p>
+
+                                <template x-if="!selectedDate">
+                                    <div class="py-12 text-center text-slate-400">
+                                        <i class="fa-regular fa-calendar-days text-3xl mb-2 text-brand-300"></i>
+                                        <p class="text-xs">Clique em um dia do calendário para carregar os horários livres.</p>
+                                    </div>
+                                </template>
+
+                                <template x-if="selectedDate">
+                                    <div class="space-y-5">
+                                        <!-- Turno Manhã (08:00 - 10:00) -->
+                                        <div>
+                                            <span class="text-[11px] font-bold text-brand-900 uppercase tracking-wider block mb-2 flex items-center gap-1">
+                                                <i class="fa-regular fa-sun text-amber-500"></i> Manhã (08:00 - 10:00)
+                                            </span>
+                                            <div class="grid grid-cols-2 gap-2">
+                                                <template x-for="slot in morningSlots" :key="slot">
+                                                    <button 
+                                                        @click="selectedTime = slot"
+                                                        :disabled="!getSlotStatus(slot).available"
+                                                        :class="{
+                                                            'bg-brand-600 text-white font-bold ring-2 ring-brand-400 shadow-md': selectedTime === slot,
+                                                            'bg-brand-50 hover:bg-brand-100 text-brand-900 font-semibold border border-brand-200': getSlotStatus(slot).available && selectedTime !== slot,
+                                                            'bg-slate-100 text-slate-400 cursor-not-allowed border-none opacity-60': !getSlotStatus(slot).available
+                                                        }"
+                                                        class="py-2.5 px-3 rounded-xl text-xs transition-all flex flex-col items-center justify-center gap-0.5">
+                                                        <span class="font-bold" x-text="slot"></span>
+                                                        <span class="text-[9px]" x-text="getSlotStatus(slot).reason"></span>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
+
+                                        <!-- Turno Tarde (14:00 - 18:00) -->
+                                        <div>
+                                            <span class="text-[11px] font-bold text-brand-900 uppercase tracking-wider block mb-2 flex items-center gap-1">
+                                                <i class="fa-solid fa-cloud-sun text-orange-400"></i> Tarde (14:00 - 18:00)
+                                            </span>
+                                            <div class="grid grid-cols-2 gap-2">
+                                                <template x-for="slot in afternoonSlots" :key="slot">
+                                                    <button 
+                                                        @click="selectedTime = slot"
+                                                        :disabled="!getSlotStatus(slot).available"
+                                                        :class="{
+                                                            'bg-brand-600 text-white font-bold ring-2 ring-brand-400 shadow-md': selectedTime === slot,
+                                                            'bg-brand-50 hover:bg-brand-100 text-brand-900 font-semibold border border-brand-200': getSlotStatus(slot).available && selectedTime !== slot,
+                                                            'bg-slate-100 text-slate-400 cursor-not-allowed border-none opacity-60': !getSlotStatus(slot).available
+                                                        }"
+                                                        class="py-2.5 px-3 rounded-xl text-xs transition-all flex flex-col items-center justify-center gap-0.5">
+                                                        <span class="font-bold" x-text="slot"></span>
+                                                        <span class="text-[9px]" x-text="getSlotStatus(slot).reason"></span>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between gap-3">
+                                <button @click="step = 1" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                                    Voltar
+                                </button>
+                                <button 
+                                    @click="step = 3" 
+                                    :disabled="!selectedDate || !selectedTime"
+                                    :class="selectedDate && selectedTime ? 'bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-600/30' : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
+                                    class="px-5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5">
+                                    <span>Continuar</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- PASSO 3: DADOS DA CLIENTE -->
+                <div x-show="step === 3" x-transition:enter="transition ease-out duration-300 opacity-0 translate-y-4">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 serif-title">Seus Dados de Contato</h2>
+                            <p class="text-xs text-slate-500">Preencha com seus dados para concluir a reserva.</p>
+                        </div>
+                        <button @click="step = 2" class="text-xs text-brand-600 font-semibold hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-left"></i> Alterar Horário
+                        </button>
+                    </div>
+
+                    <div class="max-w-xl mx-auto bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                        <form @submit.prevent="step = 4" class="space-y-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                                    Nome Completo *
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                        <i class="fa-regular fa-user"></i>
+                                    </span>
+                                    <input 
+                                        type="text" 
+                                        x-model="clientName" 
+                                        required
+                                        placeholder="Ex: Amanda Souza"
+                                        class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 outline-none text-xs sm:text-sm transition-all">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                                    WhatsApp / Telefone *
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-emerald-500">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </span>
+                                    <input 
+                                        type="tel" 
+                                        x-model="clientPhone" 
+                                        @input="formatPhoneInput($event)"
+                                        required
+                                        placeholder="(00) 90000-0000"
+                                        class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 outline-none text-xs sm:text-sm transition-all">
+                                </div>
+                            </div>
+
+                            <div class="bg-brand-50/70 p-4 rounded-2xl border border-brand-100 text-xs text-brand-900 space-y-1">
+                                <p class="font-bold">Resumo do Agendamento:</p>
+                                <p><span class="font-semibold">Procedimento:</span> <span x-text="selectedService?.title"></span></p>
+                                <p><span class="font-semibold">Data & Horário:</span> <span x-text="`${selectedDateFormatted} às ${selectedTime} (até ${calculateEndTime(selectedTime, selectedService?.durationMinutes)})`"></span></p>
+                                <p><span class="font-semibold">Valor:</span> <span class="font-bold text-brand-700" x-text="formatCurrency(selectedService?.price || 0)"></span></p>
+                            </div>
+
+                            <div class="pt-3 flex justify-between gap-3">
+                                <button type="button" @click="step = 2" class="px-5 py-3 border border-slate-200 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                                    Voltar
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    :disabled="!clientName.trim() || clientPhone.length < 14"
+                                    :class="clientName.trim() && clientPhone.length >= 14 ? 'bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-600/30' : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
+                                    class="px-6 py-3 rounded-xl text-xs font-semibold transition-all flex items-center gap-2">
+                                    <span>Revisar Agendamento</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- PASSO 4: CONFIRMAÇÃO (GRAVA E ABRE WHATSAPP) -->
+                <div x-show="step === 4" x-transition:enter="transition ease-out duration-300 opacity-0 translate-y-4">
+                    <div class="max-w-xl mx-auto bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
+                        
+                        <div class="bg-gradient-to-r from-brand-800 to-brand-900 p-6 text-white text-center relative">
+                            <div class="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center text-2xl mx-auto mb-3">
+                                <i class="fa-solid fa-calendar-check text-brand-200"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold serif-title">Confirme seu Agendamento</h2>
+                            <p class="text-brand-100 text-xs mt-1">Sua vaga será reservada e confirmada via WhatsApp!</p>
+                        </div>
+
+                        <div class="p-6 space-y-6">
+                            
+                            <div class="divide-y divide-slate-100 text-xs sm:text-sm">
+                                <div class="py-3 flex justify-between items-center">
+                                    <span class="text-slate-500 text-xs uppercase font-bold">Serviço</span>
+                                    <span class="font-bold text-slate-900" x-text="selectedService?.title"></span>
+                                </div>
+                                <div class="py-3 flex justify-between items-center">
+                                    <span class="text-slate-500 text-xs uppercase font-bold">Duração</span>
+                                    <span class="font-semibold text-slate-800" x-text="`${selectedService?.durationText}`"></span>
+                                </div>
+                                <div class="py-3 flex justify-between items-center">
+                                    <span class="text-slate-500 text-xs uppercase font-bold">Data & Horário</span>
+                                    <span class="font-bold text-brand-700" x-text="`${selectedDateFormatted} das ${selectedTime} às ${calculateEndTime(selectedTime, selectedService?.durationMinutes)}`"></span>
+                                </div>
+                                <div class="py-3 flex justify-between items-center">
+                                    <span class="text-slate-500 text-xs uppercase font-bold">Cliente</span>
+                                    <span class="font-semibold text-slate-800" x-text="clientName"></span>
+                                </div>
+                                <div class="py-3 flex justify-between items-center">
+                                    <span class="text-slate-500 text-xs uppercase font-bold">WhatsApp</span>
+                                    <span class="font-semibold text-slate-800" x-text="clientPhone"></span>
+                                </div>
+                                <div class="py-4 flex justify-between items-center bg-brand-50/60 -mx-6 px-6 border-t border-b border-brand-100">
+                                    <span class="text-brand-900 font-bold">Valor Total</span>
+                                    <span class="text-2xl font-extrabold text-brand-700" x-text="formatCurrency(selectedService?.price || 0)"></span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3 pt-2">
+                                <button 
+                                    @click="saveBookingAndRedirectWhatsApp()"
+                                    :disabled="isSubmitting"
+                                    class="w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base transition-all shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-3">
+                                    <template x-if="!isSubmitting">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fa-brands fa-whatsapp text-2xl"></i>
+                                            <span>Confirmar e Enviar para WhatsApp</span>
+                                        </div>
+                                    </template>
+                                    <template x-if="isSubmitting">
+                                        <span><i class="fa-solid fa-spinner fa-spin"></i> Agendando...</span>
+                                    </template>
+                                </button>
+
+                                <button 
+                                    @click="step = 3" 
+                                    class="w-full py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-800">
+                                    Editar Informações
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </template>
+
+
+        <!-- ================= VISÃO 2: PAINEL DA PROFISSIONAL ================= -->
+        <template x-if="currentView === 'admin' && isAdminAuthenticated">
+            <div x-transition:enter="transition ease-out duration-300 opacity-0">
+                
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-2xl font-bold text-slate-900 serif-title">Painel de Agendamentos</h2>
+                            <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                                <i class="fa-solid fa-shield-check"></i> Autenticado
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500">Gestão completa dos horários reservados no ateliê.</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button 
+                            @click="loadAllBookings()" 
+                            class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                            <i class="fa-solid fa-rotate-right"></i> Atualizar
+                        </button>
+                        <button 
+                            @click="isConfigModalOpen = true" 
+                            class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                            <i class="fa-solid fa-database text-emerald-600"></i> Configurar DB
+                        </button>
+                        <button 
+                            @click="isChangePassModalOpen = true" 
+                            class="px-3 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-800 border border-brand-200 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                            <i class="fa-solid fa-key"></i> Alterar Senha
+                        </button>
+                        <button 
+                            @click="logoutAdmin()" 
+                            class="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                            <i class="fa-solid fa-right-from-bracket"></i> Sair / Bloquear
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CARDS DE MÉTRICAS -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-regular fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Agendados</span>
+                            <h4 class="text-2xl font-extrabold text-slate-900" x-text="adminBookings.length"></h4>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Faturamento Previsto</span>
+                            <h4 class="text-2xl font-extrabold text-slate-900" x-text="formatCurrency(calculateTotalRevenue())"></h4>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Agendamentos Hoje</span>
+                            <h4 class="text-2xl font-extrabold text-slate-900" x-text="todayBookingsCount()"></h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABELA DE AGENDAMENTOS -->
+                <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-slate-50/50">
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base">Agendamentos Gravados</h3>
+                        <span class="text-xs text-slate-500" x-text="`${adminBookings.length} registro(s)`"></span>
+                    </div>
+
+                    <template x-if="adminBookings.length === 0">
+                        <div class="p-12 text-center text-slate-400">
+                            <i class="fa-solid fa-calendar-xmark text-4xl mb-3 text-brand-300"></i>
+                            <p class="font-semibold text-slate-700 text-base">Nenhum agendamento encontrado.</p>
+                        </div>
+                    </template>
+
+                    <template x-if="adminBookings.length > 0">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-100 bg-slate-50/80 text-slate-500 uppercase tracking-wider text-[10px] font-bold">
+                                        <th class="p-4">Data & Horário</th>
+                                        <th class="p-4">Cliente</th>
+                                        <th class="p-4">Procedimento</th>
+                                        <th class="p-4">Duração</th>
+                                        <th class="p-4">Valor</th>
+                                        <th class="p-4 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 font-medium">
+                                    <template x-for="item in adminBookings" :key="item.id">
+                                        <tr class="hover:bg-brand-50/30 transition-colors">
+                                            <td class="p-4 whitespace-nowrap">
+                                                <div class="font-bold text-slate-900" x-text="formatDateStr(item.data)"></div>
+                                                <div class="text-brand-700 font-bold text-[11px]" x-text="`⏰ ${item.horario_inicio} - ${item.horario_fim}`"></div>
+                                            </td>
+                                            <td class="p-4">
+                                                <div class="font-bold text-slate-900" x-text="item.cliente_nome"></div>
+                                                <div class="text-slate-500 flex items-center gap-1 text-[11px]">
+                                                    <i class="fa-brands fa-whatsapp text-emerald-600"></i>
+                                                    <span x-text="item.cliente_telefone"></span>
+                                                </div>
+                                            </td>
+                                            <td class="p-4 font-bold text-slate-800" x-text="item.servico"></td>
+                                            <td class="p-4 text-slate-600" x-text="item.duracao"></td>
+                                            <td class="p-4 font-bold text-brand-700 whitespace-nowrap" x-text="item.preco"></td>
+                                            <td class="p-4 text-right whitespace-nowrap space-x-1">
+                                                <a 
+                                                    :href="`https://wa.me/55${cleanPhone(item.cliente_telefone)}?text=Olá%20${encodeURIComponent(item.cliente_nome)},%20confirmamos%20seu%20agendamento%20para%20${formatDateStr(item.data)}%20às%20${item.horario_inicio}!`"
+                                                    target="_blank"
+                                                    title="WhatsApp Direct"
+                                                    class="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg inline-flex items-center">
+                                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                                </a>
+                                                <button 
+                                                    @click="deleteBooking(item.id)" 
+                                                    title="Excluir Registro"
+                                                    class="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg inline-flex items-center">
+                                                    <i class="fa-regular fa-trash-can text-sm"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-brand-100 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-brand-900 serif-title">Duda Crespo Nail Designer</span>
+                <span>•</span>
+                <span>Seg a Sáb (08h-10h | 14h-18h)</span>
+            </div>
+            <p>© 2026 Ateliê Duda Crespo • Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+
+    <!-- ================= MODAL CONFIGURAÇÃO E SCHEMA SUPABASE (INTERNO DO PAINEL) ================= -->
+    <div x-show="isConfigModalOpen" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" 
+         style="display: none;">
+        
+        <div @click.away="isConfigModalOpen = false" class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-brand-100 relative max-h-[90vh] overflow-y-auto">
+            <button @click="isConfigModalOpen = false" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 serif-title">Configuração do Banco de Dados</h3>
+            </div>
+            <p class="text-xs text-slate-500 mb-6">Credenciais do projeto Supabase salvas na aplicação.</p>
+
+            <form @submit.prevent="saveSupabaseCredentials()" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Project URL (Supabase)</label>
+                    <input 
+                        type="url" 
+                        x-model="supabaseUrl" 
+                        required
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-brand-600 outline-none">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Publishable / Anon Key (Supabase)</label>
+                    <input 
+                        type="password" 
+                        x-model="supabaseAnonKey" 
+                        required
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-brand-600 outline-none">
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="submit" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-colors">
+                        Salvar Credenciais
+                    </button>
+                    <button type="button" @click="testConnection()" class="py-3 px-4 bg-brand-100 text-brand-800 rounded-xl font-bold hover:bg-brand-200">
+                        Testar Conexão
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-slate-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-bold text-slate-800 text-xs">Estrutura SQL da Tabela `agendamentos`</span>
+                    <button @click="copySqlScript()" class="text-xs text-brand-600 font-bold hover:underline flex items-center gap-1">
+                        <i class="fa-regular fa-copy"></i> Copiar SQL
+                    </button>
+                </div>
+                <pre class="bg-slate-900 text-emerald-400 p-3.5 rounded-xl text-[10px] font-mono overflow-x-auto leading-relaxed border border-slate-800" x-text="sqlScript"></pre>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= MODAL DE AUTENTICAÇÃO DO PAINEL ================= -->
+    <div x-show="isAdminAuthModalOpen" 
+         x-transition
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" 
+         style="display: none;">
+        
+        <div @click.away="isAdminAuthModalOpen = false" class="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-8 shadow-2xl border border-brand-100 relative">
+            <button @click="isAdminAuthModalOpen = false" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-14 h-14 rounded-2xl bg-brand-100 text-brand-700 flex items-center justify-center text-2xl mx-auto mb-4 border border-brand-200 shadow-inner">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-bold text-slate-900 serif-title">Acesso Restrito</h3>
+                <p class="text-xs text-slate-500 mt-1">Informe a senha de acesso ao Painel da Profissional.</p>
+            </div>
+
+            <form @submit.prevent="verifyAdminPassword()" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Senha de Acesso</label>
+                    <div class="relative">
+                        <input 
+                            :type="showAdminPassword ? 'text' : 'password'" 
+                            x-model="adminPasswordInput" 
+                            required
+                            placeholder="Digite a senha..."
+                            class="w-full px-4 py-3 pr-10 rounded-xl border border-slate-200 focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 outline-none text-xs sm:text-sm transition-all">
+                        <button 
+                            type="button" 
+                            @click="showAdminPassword = !showAdminPassword" 
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
+                            <i class="fa-solid" :class="showAdminPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <template x-if="adminAuthError">
+                    <div class="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-red-500"></i>
+                        <span x-text="adminAuthError"></span>
+                    </div>
+                </template>
+
+                <div class="pt-2">
+                    <button 
+                        type="submit" 
+                        class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-xs shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center gap-2">
+                        <span>Entrar no Painel</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+            <p class="text-[10px] text-center text-slate-400 mt-4">Senha padrão inicial: <span class="font-mono font-bold text-slate-600">duda123</span></p>
+        </div>
+    </div>
+
+    <!-- ================= MODAL DE ALTERAÇÃO DE SENHA ================= -->
+    <div x-show="isChangePassModalOpen" 
+         x-transition
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" 
+         style="display: none;">
+        
+        <div @click.away="isChangePassModalOpen = false" class="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-8 shadow-2xl border border-brand-100 relative">
+            <button @click="isChangePassModalOpen = false" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fa-solid fa-key"></i>
+            </div>
+
+            <div class="text-center mb-6">
+                <h3 class="text-lg font-bold text-slate-900 serif-title">Alterar Senha do Painel</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Defina uma nova senha para proteger seu acesso.</p>
+            </div>
+
+            <form @submit.prevent="updateAdminPassword()" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nova Senha</label>
+                    <input 
+                        type="password" 
+                        x-model="newPasswordInput" 
+                        required
+                        placeholder="Digite a nova senha..."
+                        class="w-full p-3 rounded-xl border border-slate-200 focus:border-brand-600 outline-none">
+                </div>
+
+                <div class="pt-2 flex gap-2">
+                    <button type="button" @click="isChangePassModalOpen = false" class="flex-1 py-2.5 border border-slate-200 rounded-xl font-bold text-slate-600 hover:bg-slate-50">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold">
+                        Salvar Nova Senha
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL DETALHES DO SERVIÇO -->
+    <div x-show="isDetailModalOpen" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;">
+        <div @click.away="isDetailModalOpen = false" class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+            <button @click="isDetailModalOpen = false" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <template x-if="modalService">
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-brand-600 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">
+                        Descrição do Procedimento
+                    </span>
+                    <h3 class="text-2xl font-bold text-slate-900 serif-title mt-3 mb-2" x-text="modalService.title"></h3>
+
+                    <div class="flex items-center gap-4 text-xs font-semibold text-slate-600 mb-4 bg-slate-50 p-3 rounded-xl">
+                        <div>
+                            <span class="text-slate-400 block text-[10px] uppercase">Duração Estimada</span>
+                            <span class="text-slate-800" x-text="modalService.durationText"></span>
+                        </div>
+                        <div class="h-6 w-px bg-slate-200"></div>
+                        <div>
+                            <span class="text-slate-400 block text-[10px] uppercase">Valor</span>
+                            <span class="text-brand-700 font-bold" x-text="formatCurrency(modalService.price)"></span>
+                        </div>
+                    </div>
+
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6" x-text="modalService.description"></p>
+
+                    <div class="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                        <button @click="isDetailModalOpen = false" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600">Fechar</button>
+                        <button 
+                            @click="selectService(modalService); isDetailModalOpen = false; goToStep2();"
+                            class="px-5 py-2.5 rounded-xl bg-brand-600 text-white text-xs font-semibold shadow-md">
+                            Selecionar Procedimento
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+
+    <!-- TOAST DE NOTIFICAÇÃO -->
+    <div 
+        x-show="toast.show" 
+        x-transition
+        class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700 text-xs font-semibold"
+        style="display: none;">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span x-text="toast.message"></span>
+    </div>
+
+
+    <!-- ================= LOGICA DA APLICAÇÃO (ALPINE.JS + SUPABASE) ================= -->
+    <script>
+        function supabaseBookingApp() {
+            return {
+                currentView: 'booking',
+                step: 1,
+
+                // Número do WhatsApp da profissional (Duda Crespo)
+                profWhatsApp: '5517999999999',
+
+                // CREDENCIAIS SUPABASE PRÉ-CONFIGURADAS
+                supabaseUrl: 'https://zjuopcrqrboxvzhophyt.supabase.co',
+                supabaseAnonKey: 'sb_publishable_CUS0DwUt-muvfN7O7Pjiig_9iD9Wrp8',
+                supabaseClient: null,
+                isConnectedToSupabase: false,
+                isConfigModalOpen: false,
+
+                sqlScript: `CREATE TABLE IF NOT EXISTS agendamentos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  cliente_nome TEXT NOT NULL,
+  cliente_telefone TEXT NOT NULL,
+  servico TEXT NOT NULL,
+  duracao TEXT NOT NULL,
+  preco TEXT NOT NULL,
+  data DATE NOT NULL,
+  horario_inicio TEXT NOT NULL,
+  horario_fim TEXT NOT NULL
+);
+
+ALTER TABLE agendamentos ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Leitura Publica" ON agendamentos FOR SELECT USING (true);
+CREATE POLICY "Insercao Publica" ON agendamentos FOR INSERT WITH CHECK (true);
+CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
+
+                // CATÁLOGO DE SERVIÇOS EXACTOS
+                services: [
+                    {
+                        id: 1,
+                        title: 'Alongamento em Fibra',
+                        price: 200.00,
+                        durationText: '2h',
+                        durationMinutes: 120,
+                        description: 'Alongamento em fibra de vidro: técnica que proporciona comprimento e resistência às unhas, especialmente indicada para unhas extremamente curtas ou roídas.'
+                    },
+                    {
+                        id: 2,
+                        title: 'Alongamento Molde F1',
+                        price: 170.00,
+                        durationText: '1h 40min',
+                        durationMinutes: 100,
+                        description: 'Aplicação de molde F1: técnica de me alongamento indicada para unhas cujo leito natural permite o encaixe adequado do molde, proporcionando acabamento mais polido, unhas finas e resistentes.'
+                    },
+                    {
+                        id: 3,
+                        title: 'Manutenção Alongamento',
+                        price: 110.00,
+                        durationText: '1h 30min',
+                        durationMinutes: 90,
+                        description: 'É feita nas unhas que já possuem alongamento ou gel, removendo parte do produto anterior e aplicando uma nova camada para renovar a estrutura e o acabamento.'
+                    },
+                    {
+                        id: 4,
+                        title: 'Banho em gel',
+                        price: 100.00,
+                        durationText: '1h 40min',
+                        durationMinutes: 100,
+                        description: 'Aplicação de uma camada de gel sobre as unhas naturais, proporcionando maior resistência, proteção, nivelamento e durabilidade, sem adicionar comprimento.'
+                    },
+                    {
+                        id: 5,
+                        title: 'Soft Gel (postiça realista)',
+                        price: 80.00,
+                        durationText: '1h 30min',
+                        durationMinutes: 90,
+                        description: 'Postiça realista: alongamento com aparência natural, acabamento delicado e durabilidade de até 30 dias.'
+                    },
+                    {
+                        id: 6,
+                        title: 'Esmaltação em Gel',
+                        price: 60.00,
+                        durationText: '1h 20min',
+                        durationMinutes: 80,
+                        description: 'A esmaltação em gel proporciona brilho intenso, secagem imediata e maior durabilidade, mantendo as unhas bonitas por até 3 a 4 semanas.'
+                    },
+                    {
+                        id: 7,
+                        title: 'Unha com Nail Art',
+                        price: 30.00,
+                        durationText: '2h',
+                        durationMinutes: 120,
+                        description: 'Personalização, decorações manuais e artes exclusivas para elevar o design das suas unhas.'
+                    }
+                ],
+
+                // Slots de início
+                morningSlots: ['08:00', '08:30', '09:00', '09:30'],
+                afternoonSlots: ['14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'],
+
+                // Seleções do fluxo
+                selectedService: null,
+                selectedDate: null,
+                selectedTime: null,
+                clientName: '',
+                clientPhone: '',
+
+                // Calendário State
+                calendarYear: new Date().getFullYear(),
+                calendarMonth: new Date().getMonth(),
+
+                // Agendamentos ocupados no dia selecionado
+                dateBookings: [],
+                isLoadingSlots: false,
+                isSubmitting: false,
+
+                // Admin State
+                adminBookings: [],
+
+                // Modais & Toast
+                isDetailModalOpen: false,
+                modalService: null,
+                toast: { show: false, message: '' },
+
+                // Autenticação Admin (PROTEÇÃO POR SENHA)
+                isAdminAuthenticated: false,
+                isAdminAuthModalOpen: false,
+                isChangePassModalOpen: false,
+                adminPasswordInput: '',
+                showAdminPassword: false,
+                adminAuthError: '',
+                adminPassword: localStorage.getItem('dc_admin_password') || 'duda123',
+                newPasswordInput: '',
+
+                initApp() {
+                    this.selectedService = this.services[0];
+                    
+                    const savedUrl = localStorage.getItem('dc_supabase_url');
+                    const savedKey = localStorage.getItem('dc_supabase_key');
+                    if (savedUrl && savedKey) {
+                        this.supabaseUrl = savedUrl;
+                        this.supabaseAnonKey = savedKey;
+                    }
+
+                    this.initSupabase();
+                },
+
+                initSupabase() {
+                    const cleanUrl = (this.supabaseUrl || '').replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
+                    if (window.supabase && cleanUrl && this.supabaseAnonKey) {
+                        try {
+                            this.supabaseClient = window.supabase.createClient(cleanUrl, this.supabaseAnonKey);
+                            this.isConnectedToSupabase = true;
+                        } catch (e) {
+                            console.warn('Erro ao inicializar cliente Supabase:', e);
+                            this.isConnectedToSupabase = false;
+                        }
+                    } else {
+                        this.isConnectedToSupabase = false;
+                    }
+                },
+
+                async testConnection() {
+                    if (!this.supabaseClient) this.initSupabase();
+                    try {
+                        const { data, error } = await this.supabaseClient.from('agendamentos').select('count').limit(1);
+                        if (error) throw error;
+                        this.isConnectedToSupabase = true;
+                        this.showToast('Conectado com sucesso ao Supabase!');
+                    } catch(e) {
+                        this.showToast('Erro ao testar conexão com a tabela agendamentos.');
+                    }
+                },
+
+                saveSupabaseCredentials() {
+                    localStorage.setItem('dc_supabase_url', this.supabaseUrl.trim());
+                    localStorage.setItem('dc_supabase_key', this.supabaseAnonKey.trim());
+                    this.initSupabase();
+                    this.testConnection();
+                    this.isConfigModalOpen = false;
+                },
+
+                // LÓGICA DE AUTENTICAÇÃO DO PAINEL
+                openAdminTab() {
+                    if (this.isAdminAuthenticated) {
+                        this.currentView = 'admin';
+                        this.loadAllBookings();
+                    } else {
+                        this.adminPasswordInput = '';
+                        this.adminAuthError = '';
+                        this.isAdminAuthModalOpen = true;
+                    }
+                },
+
+                verifyAdminPassword() {
+                    if (this.adminPasswordInput === this.adminPassword) {
+                        this.isAdminAuthenticated = true;
+                        this.isAdminAuthModalOpen = false;
+                        this.adminPasswordInput = '';
+                        this.adminAuthError = '';
+                        this.currentView = 'admin';
+                        this.loadAllBookings();
+                        this.showToast('Acesso concedido ao Painel!');
+                    } else {
+                        this.adminAuthError = 'Senha incorreta. Tente novamente.';
+                    }
+                },
+
+                logoutAdmin() {
+                    this.isAdminAuthenticated = false;
+                    this.currentView = 'booking';
+                    this.showToast('Painel bloqueado com sucesso.');
+                },
+
+                updateAdminPassword() {
+                    if (!this.newPasswordInput || this.newPasswordInput.trim().length < 4) {
+                        this.showToast('A senha deve conter pelo menos 4 caracteres.');
+                        return;
+                    }
+                    this.adminPassword = this.newPasswordInput.trim();
+                    localStorage.setItem('dc_admin_password', this.adminPassword);
+                    this.isChangePassModalOpen = false;
+                    this.newPasswordInput = '';
+                    this.showToast('Senha do painel atualizada com sucesso!');
+                },
+
+                copySqlScript() {
+                    navigator.clipboard.writeText(this.sqlScript).then(() => {
+                        this.showToast('SQL copiado para a área de transferência!');
+                    });
+                },
+
+                showToast(msg) {
+                    this.toast.message = msg;
+                    this.toast.show = true;
+                    setTimeout(() => { this.toast.show = false; }, 3500);
+                },
+
+                selectService(service) {
+                    this.selectedService = service;
+                    this.selectedTime = null;
+                },
+
+                goToStep2() {
+                    if (!this.selectedService) return;
+                    this.step = 2;
+                },
+
+                openModal(service) {
+                    this.modalService = service;
+                    this.isDetailModalOpen = true;
+                },
+
+                get currentMonthYearName() {
+                    const date = new Date(this.calendarYear, this.calendarMonth, 1);
+                    return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                },
+
+                get calendarBlanks() {
+                    const firstDayIndex = new Date(this.calendarYear, this.calendarMonth, 1).getDay();
+                    return Array.from({ length: firstDayIndex }, (_, i) => i);
+                },
+
+                get calendarDays() {
+                    const daysInMonth = new Date(this.calendarYear, this.calendarMonth + 1, 0).getDate();
+                    const today = new Date();
+                    today.setHours(0,0,0,0);
+
+                    const days = [];
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dateObj = new Date(this.calendarYear, this.calendarMonth, day);
+                        const dateStr = dateObj.toISOString().split('T')[0];
+                        
+                        const isSunday = dateObj.getDay() === 0;
+                        const isPast = dateObj < today;
+                        const isDisabled = isSunday || isPast;
+                        const isToday = dateObj.getTime() === today.getTime();
+
+                        days.push({
+                            dayNumber: day,
+                            dateStr: dateStr,
+                            isDisabled: isDisabled,
+                            isSunday: isSunday,
+                            isToday: isToday
+                        });
+                    }
+                    return days;
+                },
+
+                prevMonth() {
+                    if (this.calendarMonth === 0) {
+                        this.calendarMonth = 11;
+                        this.calendarYear--;
+                    } else {
+                        this.calendarMonth--;
+                    }
+                },
+
+                nextMonth() {
+                    if (this.calendarMonth === 11) {
+                        this.calendarMonth = 0;
+                        this.calendarYear++;
+                    } else {
+                        this.calendarMonth++;
+                    }
+                },
+
+                async onSelectDate(dayObj) {
+                    if (dayObj.isDisabled) return;
+                    this.selectedDate = dayObj.dateStr;
+                    this.selectedTime = null;
+                    await this.fetchBookingsForDate(this.selectedDate);
+                },
+
+                get selectedDateFormatted() {
+                    if (!this.selectedDate) return '';
+                    const parts = this.selectedDate.split('-');
+                    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                },
+
+                timeToMinutes(timeStr) {
+                    if (!timeStr) return 0;
+                    const [h, m] = timeStr.split(':').map(Number);
+                    return h * 60 + m;
+                },
+
+                minutesToTime(mins) {
+                    const h = Math.floor(mins / 60).toString().padStart(2, '0');
+                    const m = (mins % 60).toString().padStart(2, '0');
+                    return `${h}:${m}`;
+                },
+
+                calculateEndTime(startTimeStr, durationMinutes) {
+                    if (!startTimeStr || !durationMinutes) return '';
+                    const startMins = this.timeToMinutes(startTimeStr);
+                    const endMins = startMins + durationMinutes;
+                    return this.minutesToTime(endMins);
+                },
+
+                getSlotStatus(slotStr) {
+                    if (!this.selectedService) return { available: false, reason: 'Selecione serviço' };
+
+                    const candidateStart = this.timeToMinutes(slotStr);
+                    const duration = this.selectedService.durationMinutes;
+                    const candidateEnd = candidateStart + duration;
+
+                    // Turnos: Manhã (480-600 min), Tarde (840-1080 min)
+                    const isMorning = candidateStart >= 480 && candidateStart < 600;
+                    const isAfternoon = candidateStart >= 840 && candidateStart < 1080;
+
+                    if (isMorning && candidateEnd > 600) {
+                        return { available: false, reason: 'Estoura 10:00' };
+                    }
+                    if (isAfternoon && candidateEnd > 1080) {
+                        return { available: false, reason: 'Estoura 18:00' };
+                    }
+
+                    // Checagem de conflito
+                    for (let booking of this.dateBookings) {
+                        const bStart = this.timeToMinutes(booking.horario_inicio);
+                        const bEnd = this.timeToMinutes(booking.horario_fim);
+
+                        if (candidateStart < bEnd && candidateEnd > bStart) {
+                            return { available: false, reason: 'Ocupado' };
+                        }
+                    }
+
+                    return { available: true, reason: 'Livre' };
+                },
+
+                async fetchBookingsForDate(dateStr) {
+                    this.isLoadingSlots = true;
+                    if (this.isConnectedToSupabase && this.supabaseClient) {
+                        try {
+                            const { data, error } = await this.supabaseClient
+                                .from('agendamentos')
+                                .select('*')
+                                .eq('data', dateStr);
+
+                            if (error) throw error;
+                            this.dateBookings = data || [];
+                        } catch (e) {
+                            console.error('Erro ao consultar Supabase:', e);
+                            this.fetchLocalBookingsForDate(dateStr);
+                        }
+                    } else {
+                        this.fetchLocalBookingsForDate(dateStr);
+                    }
+                    this.isLoadingSlots = false;
+                },
+
+                fetchLocalBookingsForDate(dateStr) {
+                    const local = JSON.parse(localStorage.getItem('dc_local_bookings') || '[]');
+                    this.dateBookings = local.filter(b => b.data === dateStr);
+                },
+
+                async loadAllBookings() {
+                    if (this.isConnectedToSupabase && this.supabaseClient) {
+                        try {
+                            const { data, error } = await this.supabaseClient
+                                .from('agendamentos')
+                                .select('*')
+                                .order('data', { ascending: false });
+
+                            if (error) throw error;
+                            this.adminBookings = data || [];
+                            return;
+                        } catch (e) {
+                            console.error('Erro ao listar Supabase:', e);
+                        }
+                    }
+                    
+                    const local = JSON.parse(localStorage.getItem('dc_local_bookings') || '[]');
+                    this.adminBookings = local;
+                },
+
+                async saveBookingAndRedirectWhatsApp() {
+                    this.isSubmitting = true;
+
+                    const endTimeStr = this.calculateEndTime(this.selectedTime, this.selectedService.durationMinutes);
+                    const precoFormatted = this.formatCurrency(this.selectedService.price);
+
+                    const bookingPayload = {
+                        cliente_nome: this.clientName.trim(),
+                        cliente_telefone: this.clientPhone.trim(),
+                        servico: this.selectedService.title,
+                        duracao: this.selectedService.durationText,
+                        preco: precoFormatted,
+                        data: this.selectedDate,
+                        horario_inicio: this.selectedTime,
+                        horario_fim: endTimeStr
+                    };
+
+                    if (this.isConnectedToSupabase && this.supabaseClient) {
+                        try {
+                            const { error } = await this.supabaseClient
+                                .from('agendamentos')
+                                .insert([bookingPayload]);
+
+                            if (error) throw error;
+                        } catch (e) {
+                            console.error('Erro ao inserir no Supabase, salvando local:', e);
+                        }
+                    }
+
+                    const localBookings = JSON.parse(localStorage.getItem('dc_local_bookings') || '[]');
+                    localBookings.push({ id: Date.now(), ...bookingPayload });
+                    localStorage.setItem('dc_local_bookings', JSON.stringify(localBookings));
+
+                    this.isSubmitting = false;
+
+                    const msg = 
+`✨ *AGENDAMENTO REALIZADO - DUDA CRESPO NAIL DESIGNER* ✨
+
+💅 *Procedimento:* ${bookingPayload.servico}
+⏱️ *Duração:* ${bookingPayload.duracao} (${bookingPayload.horario_inicio} até ${bookingPayload.horario_fim})
+💰 *Valor:* ${bookingPayload.preco}
+
+📅 *Data:* ${this.selectedDateFormatted}
+⏰ *Horário Início:* ${bookingPayload.horario_inicio}
+
+👤 *Cliente:* ${bookingPayload.cliente_nome}
+📱 *WhatsApp:* ${bookingPayload.cliente_telefone}
+
+Reserva concluída no sistema! Te aguardo no ateliê. 💖`;
+
+                    const whatsappUrl = `https://wa.me/${this.profWhatsApp}?text=${encodeURIComponent(msg)}`;
+
+                    this.showToast('Agendamento gravado com sucesso!');
+
+                    setTimeout(() => {
+                        window.open(whatsappUrl, '_blank');
+                        this.step = 1;
+                        this.selectedTime = null;
+                        this.clientName = '';
+                        this.clientPhone = '';
+                    }, 800);
+                },
+
+                async deleteBooking(id) {
+                    if (this.isConnectedToSupabase && this.supabaseClient) {
+                        try {
+                            const { error } = await this.supabaseClient
+                                .from('agendamentos')
+                                .delete()
+                                .eq('id', id);
+
+                            if (!error) this.showToast('Registro excluído do banco!');
+                        } catch (e) {
+                            console.error('Erro ao excluir do Supabase:', e);
+                        }
+                    }
+
+                    let local = JSON.parse(localStorage.getItem('dc_local_bookings') || '[]');
+                    local = local.filter(b => b.id !== id);
+                    localStorage.setItem('dc_local_bookings', JSON.stringify(local));
+
+                    this.loadAllBookings();
+                },
+
+                calculateTotalRevenue() {
+                    return this.adminBookings.reduce((sum, item) => {
+                        const num = parseFloat((item.preco || '').replace(/[^\d,-]/g, '').replace(',', '.')) || 0;
+                        return sum + num;
+                    }, 0);
+                },
+
+                todayBookingsCount() {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    return this.adminBookings.filter(b => b.data === todayStr).length;
+                },
+
+                formatPhoneInput(event) {
+                    let val = event.target.value.replace(/\D/g, '');
+                    if (val.length > 11) val = val.slice(0, 11);
+                    if (val.length > 10) {
+                        val = val.replace(/^(\d\d)(\d{5})(\d{4}).*/, '($1) $2-$3');
+                    } else if (val.length > 6) {
+                        val = val.replace(/^(\d\d)(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+                    } else if (val.length > 2) {
+                        val = val.replace(/^(\d\d)(\d{0,5})/, '($1) $2');
+                    } else if (val.length > 0) {
+                        val = val.replace(/^(\d*)/, '($1');
+                    }
+                    this.clientPhone = val;
+                },
+
+                cleanPhone(phone) {
+                    return (phone || '').replace(/\D/g, '');
+                },
+
+                formatCurrency(val) {
+                    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+                },
+
+                formatDateStr(dateIso) {
+                    if (!dateIso) return '';
+                    const parts = dateIso.split('-');
+                    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

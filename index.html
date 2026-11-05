@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duda Crespo - Nail Designer | Agendamento Online</title>
+    <title>Espaço Duda Crespo - Nail Designer | Agendamento Online</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -23,6 +23,7 @@
                             700: '#6d28d9',
                             800: '#5b21b6',
                             900: '#4c1d95',
+                            950: '#2e1065',
                             dark: '#181329'
                         }
                     },
@@ -82,14 +83,12 @@
             <!-- LOGO DC NAIL DESIGNER -->
             <div class="flex items-center gap-3 cursor-pointer" @click="currentView = 'booking'">
                 <div class="relative w-12 h-12 rounded-full border-2 border-brand-500 flex items-center justify-center p-0.5 bg-white shadow-sm overflow-hidden group">
-                    <!-- Imagem do Logótipo Oficial -->
                     <img 
                         src="logo.jpeg" 
-                        alt="Duda Crespo Nail Designer Logo" 
+                        alt="Espaço Duda Crespo Logo" 
                         class="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                        onerror="this.src='logo.png'; this.onerror=function(){ this.style.display='none'; this.nextElementSibling.style.display='flex'; }"
                     />
-                    <!-- Fallback elegante (exibido caso logo.png ainda não esteja na pasta) -->
                     <div class="w-full h-full items-center justify-center bg-white rounded-full" style="display: none;">
                         <svg class="w-6 h-6 text-brand-600 butterfly-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                             <path d="M12 4c.5 0 1 .5 1 1v14c0 .5-.5 1-1 1s-1-.5-1-1V5c0-.5.5-1 1-1z" />
@@ -105,11 +104,11 @@
                     <span class="block text-xl font-bold tracking-tight text-brand-900 leading-none serif-title">
                         DC <span class="text-xs font-normal font-sans italic text-brand-600 tracking-normal">nail designer</span>
                     </span>
-                    <span class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold block mt-0.5">Duda Crespo</span>
+                    <span class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold block mt-0.5">Espaço Duda Crespo</span>
                 </div>
             </div>
 
-            <!-- NAVEGAÇÃO LIMPA -->
+            <!-- NAVEGAÇÃO -->
             <div class="flex items-center gap-2">
                 <button 
                     @click="currentView = 'booking'" 
@@ -137,16 +136,27 @@
         <template x-if="currentView === 'booking'">
             <div>
                 
-                <!-- HERO BANNER -->
-                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 text-white p-6 sm:p-8 mb-8 shadow-xl shadow-brand-900/15 border border-brand-700/50">
-                    <div class="relative z-10 max-w-xl">
+                <!-- HERO BANNER ROXO COM FOTO -->
+                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 text-white p-6 sm:p-8 mb-8 shadow-xl shadow-brand-900/15 border border-brand-700/50 flex flex-col-reverse md:flex-row items-center justify-between gap-6">
+                    <div class="relative z-10 max-w-md text-center md:text-left">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-brand-200 mb-3 border border-white/20">
-                            <i class="fa-solid fa-sparkles text-amber-300"></i> Ateliê Duda Crespo
+                            <i class="fa-solid fa-sparkles text-amber-300"></i> Espaço Duda Crespo
                         </span>
                         <h1 class="text-2xl sm:text-4xl font-bold serif-title tracking-wide mb-2">Agende seu horário online</h1>
                         <p class="text-brand-100 text-xs sm:text-sm font-light">
                             Escolha seu procedimento, consulte a disponibilidade em tempo real de Seg a Sáb e garanta o seu horário.
                         </p>
+                    </div>
+
+                    <!-- FOTO DUDA CRESPO -->
+                    <div class="relative z-10 w-48 sm:w-56 md:w-64 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-brand-300/40 shadow-2xl flex-shrink-0 bg-brand-950/50">
+                        <img 
+                            src="fotoduda.jpeg" 
+                            alt="Duda Crespo - Nail Designer" 
+                            class="w-full h-full object-cover object-center"
+                            onerror="this.src='foto.jpg'; this.onerror=function(){ this.src='duda.jpeg'; };"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-950/30 via-transparent to-transparent pointer-events-none"></div>
                     </div>
                 </div>
 
@@ -157,7 +167,6 @@
                         <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-brand-600 rounded-full transition-all duration-500 z-0"
                              :style="`width: ${((step - 1) / 3) * 100}%`"></div>
 
-                        <!-- Step 1 -->
                         <div class="relative z-10 flex flex-col items-center">
                             <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-md"
                                  :class="step >= 1 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500'">
@@ -167,7 +176,6 @@
                             <span class="text-[11px] font-semibold mt-1 text-slate-600 hidden sm:block">Serviço</span>
                         </div>
 
-                        <!-- Step 2 -->
                         <div class="relative z-10 flex flex-col items-center">
                             <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-md"
                                  :class="step >= 2 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500'">
@@ -177,7 +185,6 @@
                             <span class="text-[11px] font-semibold mt-1 text-slate-600 hidden sm:block">Data & Hora</span>
                         </div>
 
-                        <!-- Step 3 -->
                         <div class="relative z-10 flex flex-col items-center">
                             <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-md"
                                  :class="step >= 3 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500'">
@@ -187,7 +194,6 @@
                             <span class="text-[11px] font-semibold mt-1 text-slate-600 hidden sm:block">Seus Dados</span>
                         </div>
 
-                        <!-- Step 4 -->
                         <div class="relative z-10 flex flex-col items-center">
                             <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-md"
                                  :class="step >= 4 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500'">
@@ -297,7 +303,7 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         
-                        <!-- CALENDÁRIO MENSAL (7 cols) -->
+                        <!-- CALENDÁRIO MENSAL -->
                         <div class="lg:col-span-7 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="font-bold text-slate-900 text-base capitalize" x-text="currentMonthYearName"></h3>
@@ -352,12 +358,12 @@
                             </div>
                         </div>
 
-                        <!-- SLOTS DE HORÁRIOS (5 cols) -->
+                        <!-- SLOTS DE HORÁRIOS -->
                         <div class="lg:col-span-5 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
                             <div>
                                 <div class="flex items-center justify-between mb-1">
                                     <h3 class="font-bold text-slate-900 text-base">Horários Livres</h3>
-                                    <span x-show="isLoadingSlots" class="text-xs text-brand-600 animate-pulse"><i class="fa-solid fa-spinner fa-spin"></i> Verificando agenda...</span>
+                                    <span x-show="isLoadingSlots" class="text-xs text-brand-600 animate-pulse"><i class="fa-solid fa-spinner fa-spin"></i> Verificando...</span>
                                 </div>
                                 <p class="text-xs text-slate-500 mb-4" x-text="selectedDateFormatted ? `Data: ${selectedDateFormatted}` : 'Selecione uma data no calendário'"></p>
 
@@ -370,12 +376,12 @@
 
                                 <template x-if="selectedDate">
                                     <div class="space-y-5">
-                                        <!-- Turno Manhã (08:00 - 10:00) -->
+                                        <!-- Turno Manhã -->
                                         <div>
                                             <span class="text-[11px] font-bold text-brand-900 uppercase tracking-wider block mb-2 flex items-center gap-1">
                                                 <i class="fa-regular fa-sun text-amber-500"></i> Manhã (08:00 - 10:00)
                                             </span>
-                                            <div class="grid grid-cols-2 gap-2">
+                                            <div class="grid grid-cols-3 gap-2">
                                                 <template x-for="slot in morningSlots" :key="slot">
                                                     <button 
                                                         @click="selectedTime = slot"
@@ -385,7 +391,7 @@
                                                             'bg-brand-50 hover:bg-brand-100 text-brand-900 font-semibold border border-brand-200': getSlotStatus(slot).available && selectedTime !== slot,
                                                             'bg-slate-100 text-slate-400 cursor-not-allowed border-none opacity-60': !getSlotStatus(slot).available
                                                         }"
-                                                        class="py-2.5 px-3 rounded-xl text-xs transition-all flex flex-col items-center justify-center gap-0.5">
+                                                        class="py-2.5 px-2 rounded-xl text-xs transition-all flex flex-col items-center justify-center gap-0.5">
                                                         <span class="font-bold" x-text="slot"></span>
                                                         <span class="text-[9px]" x-text="getSlotStatus(slot).reason"></span>
                                                     </button>
@@ -393,12 +399,12 @@
                                             </div>
                                         </div>
 
-                                        <!-- Turno Tarde (14:00 - 18:00) -->
+                                        <!-- Turno Tarde -->
                                         <div>
                                             <span class="text-[11px] font-bold text-brand-900 uppercase tracking-wider block mb-2 flex items-center gap-1">
                                                 <i class="fa-solid fa-cloud-sun text-orange-400"></i> Tarde (14:00 - 18:00)
                                             </span>
-                                            <div class="grid grid-cols-2 gap-2">
+                                            <div class="grid grid-cols-3 gap-2">
                                                 <template x-for="slot in afternoonSlots" :key="slot">
                                                     <button 
                                                         @click="selectedTime = slot"
@@ -408,7 +414,7 @@
                                                             'bg-brand-50 hover:bg-brand-100 text-brand-900 font-semibold border border-brand-200': getSlotStatus(slot).available && selectedTime !== slot,
                                                             'bg-slate-100 text-slate-400 cursor-not-allowed border-none opacity-60': !getSlotStatus(slot).available
                                                         }"
-                                                        class="py-2.5 px-3 rounded-xl text-xs transition-all flex flex-col items-center justify-center gap-0.5">
+                                                        class="py-2.5 px-2 rounded-xl text-xs transition-all flex flex-col items-center justify-center gap-0.5">
                                                         <span class="font-bold" x-text="slot"></span>
                                                         <span class="text-[9px]" x-text="getSlotStatus(slot).reason"></span>
                                                     </button>
@@ -510,7 +516,7 @@
                     </div>
                 </div>
 
-                <!-- PASSO 4: CONFIRMAÇÃO (GRAVA E ABRE WHATSAPP) -->
+                <!-- PASSO 4: CONFIRMAÇÃO -->
                 <div x-show="step === 4" x-transition:enter="transition ease-out duration-300 opacity-0 translate-y-4">
                     <div class="max-w-xl mx-auto bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
                         
@@ -594,7 +600,7 @@
                                 <i class="fa-solid fa-shield-check"></i> Autenticado
                             </span>
                         </div>
-                        <p class="text-xs text-slate-500">Gestão completa dos horários reservados no ateliê.</p>
+                        <p class="text-xs text-slate-500">Gestão completa dos horários reservados no espaço.</p>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">
@@ -700,7 +706,7 @@
                                             <td class="p-4 font-bold text-brand-700 whitespace-nowrap" x-text="item.preco"></td>
                                             <td class="p-4 text-right whitespace-nowrap space-x-1">
                                                 <a 
-                                                    :href="`https://wa.me/55${cleanPhone(item.cliente_telefone)}?text=Olá%20${encodeURIComponent(item.cliente_nome)},%20confirmamos%20seu%20agendamento%20para%20${formatDateStr(item.data)}%20às%20${item.horario_inicio}!`"
+                                                    :href="`https://wa.me/55${cleanPhone(item.cliente_telefone)}?text=Olá%20${encodeURIComponent(item.cliente_nome)},%20confirmamos%20seu%20agendamento%20para%20${formatDateStr(item.data)}%20às%20${item.horario_inicio}!%20Espaço%20Duda%20Crespo`"
                                                     target="_blank"
                                                     title="WhatsApp Direct"
                                                     class="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg inline-flex items-center">
@@ -729,23 +735,18 @@
     <footer class="bg-white border-t border-brand-100 py-6 text-center text-xs text-slate-500">
         <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div class="flex items-center gap-2">
-                <span class="font-bold text-brand-900 serif-title">Duda Crespo Nail Designer</span>
+                <span class="font-bold text-brand-900 serif-title">Espaço Duda Crespo Nail Designer</span>
                 <span>•</span>
                 <span>Seg a Sáb (08h-10h | 14h-18h)</span>
             </div>
-            <p>© 2026 Ateliê Duda Crespo • Todos os direitos reservados</p>
+            <p>© 2026 Espaço Duda Crespo • Todos os direitos reservados</p>
         </div>
     </footer>
 
 
-    <!-- ================= MODAL CONFIGURAÇÃO E SCHEMA SUPABASE (INTERNO DO PAINEL) ================= -->
+    <!-- MODAL CONFIGURAÇÃO SUPABASE -->
     <div x-show="isConfigModalOpen" 
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
+         x-transition
          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" 
          style="display: none;">
         
@@ -804,7 +805,7 @@
     </div>
 
 
-    <!-- ================= MODAL DE AUTENTICAÇÃO DO PAINEL ================= -->
+    <!-- MODAL DE AUTENTICAÇÃO DO PAINEL -->
     <div x-show="isAdminAuthModalOpen" 
          x-transition
          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" 
@@ -863,7 +864,7 @@
         </div>
     </div>
 
-    <!-- ================= MODAL DE ALTERAÇÃO DE SENHA ================= -->
+    <!-- MODAL ALTERAÇÃO DE SENHA -->
     <div x-show="isChangePassModalOpen" 
          x-transition
          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" 
@@ -960,7 +961,7 @@
     </div>
 
 
-    <!-- ================= LOGICA DA APLICAÇÃO (ALPINE.JS + SUPABASE) ================= -->
+    <!-- ================= LÓGICA DA APLICAÇÃO (ALPINE.JS + SUPABASE) ================= -->
     <script>
         function supabaseBookingApp() {
             return {
@@ -968,7 +969,7 @@
                 step: 1,
 
                 // Número do WhatsApp da profissional (Duda Crespo)
-                profWhatsApp: '5517988315391',
+                profWhatsApp: '5517999999999',
 
                 // CREDENCIAIS SUPABASE PRÉ-CONFIGURADAS
                 supabaseUrl: 'https://zjuopcrqrboxvzhophyt.supabase.co',
@@ -995,7 +996,7 @@ CREATE POLICY "Leitura Publica" ON agendamentos FOR SELECT USING (true);
 CREATE POLICY "Insercao Publica" ON agendamentos FOR INSERT WITH CHECK (true);
 CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
 
-                // CATÁLOGO DE SERVIÇOS EXACTOS
+                // CATÁLOGO ATUALIZADO DE SERVIÇOS
                 services: [
                     {
                         id: 1,
@@ -1011,43 +1012,59 @@ CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
                         price: 170.00,
                         durationText: '1h 40min',
                         durationMinutes: 100,
-                        description: 'Aplicação de molde F1: técnica de me alongamento indicada para unhas cujo leito natural permite o encaixe adequado do molde, proporcionando acabamento mais polido, unhas finas e resistentes.'
+                        description: 'Aplicação de molde F1: técnica de alongamento indicada para unhas cujo leito natural permite o encaixe adequado do molde, proporcionando acabamento mais polido, unhas finas e resistentes.'
                     },
                     {
                         id: 3,
-                        title: 'Manutenção Alongamento',
-                        price: 110.00,
-                        durationText: '1h 30min',
-                        durationMinutes: 90,
-                        description: 'É feita nas unhas que já possuem me me alongamento ou gel, removendo parte do produto anterior e aplicando uma nova camada para renovar a estrutura e o acabamento.'
-                    },
-                    {
-                        id: 4,
-                        title: 'Banho em gel',
+                        title: 'Manutenção',
                         price: 100.00,
                         durationText: '1h 40min',
                         durationMinutes: 100,
-                        description: 'Aplicação de uma camada de gel sobre as unhas naturais, proporcionando maior resistência, proteção, nivelamento e durabilidade, sem adicionar comprimento.'
+                        description: 'A manutenção de unhas em gel consiste em remover parte do gel antigo, fazer o preenchimento do crescimento natural da unha e aplicar uma nova camada de gel, mantendo o alongamento bonito, resistente e bem estruturado.'
+                    },
+                    {
+                        id: 4,
+                        title: 'Manutenção vinda de outro profissional',
+                        price: 130.00,
+                        durationText: '2h',
+                        durationMinutes: 120,
+                        description: 'A manutenção de unhas em gel feita por outra profissional exige a remoção completa do produto anterior e uma nova aplicação, garantindo uma estrutura segura, resistente e um acabamento impecável.'
                     },
                     {
                         id: 5,
+                        title: 'Banho em gel',
+                        price: 100.00,
+                        durationText: '1h 30min',
+                        durationMinutes: 90,
+                        description: 'Aplicação de uma camada de gel sobre as unhas naturais, proporcionando maior resistência, proteção, nivelamento e durabilidade, sem adicionar comprimento.'
+                    },
+                    {
+                        id: 6,
                         title: 'Soft Gel (postiça realista)',
                         price: 80.00,
                         durationText: '1h 30min',
                         durationMinutes: 90,
-                        description: 'Postiça realista: me me me alongamento com aparência natural, acabamento delicado e durabilidade de até 30 dias.'
+                        description: 'Postiça realista: alongamento com aparência natural, acabamento delicado e durabilidade de até 30 dias.'
                     },
                     {
-                        id: 6,
+                        id: 7,
                         title: 'Esmaltação em Gel',
                         price: 60.00,
-                        durationText: '1h 20min',
-                        durationMinutes: 80,
+                        durationText: '1h 10min',
+                        durationMinutes: 70,
                         description: 'A esmaltação em gel proporciona brilho intenso, secagem imediata e maior durabilidade, mantendo as unhas bonitas por até 3 a 4 semanas.'
+                    },
+                    {
+                        id: 8,
+                        title: 'Pé em gel',
+                        price: 50.00,
+                        durationText: '1h',
+                        durationMinutes: 60,
+                        description: 'O pé em gel é uma esmaltação feita com gel, que proporciona alta durabilidade, brilho intenso e secagem imediata. Você sai do salão com os pés prontos, sem precisar esperar secar!'
                     }
                 ],
 
-                // Slots de início fixos de hora em hora (08:00, 09:00, 10:00 e 14:00, 15:00, 16:00, 17:00, 18:00)
+                // Slots de início de hora em hora
                 morningSlots: ['08:00', '09:00', '10:00'],
                 afternoonSlots: ['14:00', '15:00', '16:00', '17:00', '18:00'],
 
@@ -1075,7 +1092,7 @@ CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
                 modalService: null,
                 toast: { show: false, message: '' },
 
-                // Autenticação Admin (PROTEÇÃO POR SENHA)
+                // Autenticação Admin
                 isAdminAuthenticated: false,
                 isAdminAuthModalOpen: false,
                 isChangePassModalOpen: false,
@@ -1133,7 +1150,6 @@ CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
                     this.isConfigModalOpen = false;
                 },
 
-                // LÓGICA DE AUTENTICAÇÃO DO PAINEL
                 openAdminTab() {
                     if (this.isAdminAuthenticated) {
                         this.currentView = 'admin';
@@ -1297,7 +1313,6 @@ CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
                     const duration = this.selectedService.durationMinutes;
                     const candidateEnd = candidateStart + duration;
 
-                    // Checagem de conflito com agendamentos existentes no banco de dados
                     for (let booking of this.dateBookings) {
                         const bStart = this.timeToMinutes(booking.horario_inicio);
                         const bEnd = this.timeToMinutes(booking.horario_fim);
@@ -1392,7 +1407,7 @@ CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
                     this.isSubmitting = false;
 
                     const msg = 
-`✨ *AGENDAMENTO REALIZADO - DUDA CRESPO NAIL DESIGNER* ✨
+`✨ *AGENDAMENTO REALIZADO - ESPAÇO DUDA CRESPO* ✨
 
 💅 *Procedimento:* ${bookingPayload.servico}
 ⏱️ *Duração:* ${bookingPayload.duracao} (${bookingPayload.horario_inicio} até ${bookingPayload.horario_fim})
@@ -1404,7 +1419,7 @@ CREATE POLICY "Exclusao Publica" ON agendamentos FOR DELETE USING (true);`,
 👤 *Cliente:* ${bookingPayload.cliente_nome}
 📱 *WhatsApp:* ${bookingPayload.cliente_telefone}
 
-Reserva concluída no sistema! Te aguardo no ateliê. 💖`;
+Reserva concluída no sistema! Te aguardo no espaço. 💖`;
 
                     const whatsappUrl = `https://wa.me/${this.profWhatsApp}?text=${encodeURIComponent(msg)}`;
 
@@ -1478,7 +1493,7 @@ Reserva concluída no sistema! Te aguardo no ateliê. 💖`;
                 formatDateStr(dateIso) {
                     if (!dateIso) return '';
                     const parts = dateIso.split('-');
-                    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    return `${parts[2]}/${parts[1]}/${parts0}`;
                 }
             }
         }
